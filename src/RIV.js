@@ -7,6 +7,8 @@ import Navbar from "react-bootstrap/Navbar";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
+import CardColumns from "react-bootstrap/CardColumns";
+import Card from "react-bootstrap/Card";
 
 export default class RIV extends Component {
   constructor(props) {
@@ -16,6 +18,7 @@ export default class RIV extends Component {
       data: null,
       subR: "",
       nextPic: 0,
+      numOfImg: 100,
     };
   }
 
@@ -35,7 +38,16 @@ export default class RIV extends Component {
         let tmpArray = [];
         let rJ = responseJson.data.children;
         for (var i = 0; i < rJ.length; i++) {
-          tmpArray.push(rJ[i].data.url);
+          const urlStr = JSON.stringify(rJ[i].data.url);
+          console.log(urlStr);
+          if (
+            urlStr.endsWith('.jpg"') ||
+            urlStr.endsWith('.png$"') ||
+            urlStr.endsWith('.jpeg"') ||
+            urlStr.endsWith('.gif"')
+          ) {
+            tmpArray.push(rJ[i].data.url);
+          }
         }
         //DELETE NEXTPIC, FOR TESTING PURPOSES ONLY
         this.setState({ data: tmpArray, nextPic: 0 });
@@ -53,6 +65,13 @@ export default class RIV extends Component {
     this.setState({
       [name]: value,
     });
+  };
+
+  _handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.renderMyData(this.state.numOfImg);
+    }
   };
 
   //Change index of array containing pictures so the next or the previous image is accessed, via adding/subtracting 1
@@ -95,13 +114,41 @@ export default class RIV extends Component {
       //     </span>
       //   </div>
       // </div>
-      <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#home">Home</Navbar.Brand>
-        <Form inline>
-          <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-          <Button variant="outline-success">Search</Button>
-        </Form>
-      </Navbar>
+      <div>
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand href="#home">Home</Navbar.Brand>
+          <Form inline>
+            <FormControl
+              name="subR"
+              onChange={this.handleInputChange}
+              onKeyDown={this._handleKeyDown}
+              type="text"
+              placeholder="Search Subreddit"
+              className="mr-sm-2"
+            />
+            <Button
+              onClick={() => this.renderMyData(this.state.numOfImg)}
+              variant="success"
+            >
+              Search
+            </Button>
+          </Form>
+        </Navbar>
+
+        <CardColumns>
+          {this.state.data ? (
+            this.state.data.map(function (item, i) {
+              return (
+                <Card key={i}>
+                  <Card.Img src={item} />
+                </Card>
+              );
+            })
+          ) : (
+            <div>LOAD</div>
+          )}
+        </CardColumns>
+      </div>
     );
   }
 }
