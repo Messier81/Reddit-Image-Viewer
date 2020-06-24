@@ -1,1 +1,0 @@
-{"version":3,"sources":["RIV.css"],"names":[],"mappings":"AACA,aACE,UACF,CACA,cACE,mBACF","file":"main.0142bff7.chunk.css","sourcesContent":["/* Change size of search bar */\r\n.form-inline {\r\n  width: 100%;\r\n}\r\n.form-control {\r\n  width: 90% !important;\r\n}\r\n"]}
