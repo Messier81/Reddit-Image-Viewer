@@ -5,3 +5,24 @@
 .form-control {
   width: 90% !important;
 }
+
+/* MAKE IT BETTER */
+.imageDisplay {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.listOfSubRs {
+  text-align: center;
+}
+
+.subRedListTopic {
+  font-weight: bold;
+  overflow-wrap: break-word;
+}

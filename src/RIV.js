@@ -7,8 +7,12 @@ import Navbar from "react-bootstrap/Navbar";
 import Form from "react-bootstrap/Form";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
-import CardColumns from "react-bootstrap/CardColumns";
 import Card from "react-bootstrap/Card";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import ListGroup from "react-bootstrap/ListGroup";
+import Alert from "react-bootstrap/Alert";
 
 export default class RIV extends Component {
   constructor(props) {
@@ -17,20 +21,16 @@ export default class RIV extends Component {
     this.state = {
       data: null,
       subR: "",
-      nextPic: 0,
-      numOfImg: 100,
+      numOfImg: 5,
+      afterStart: null,
+      sigPic: 0,
+      visible: false,
     };
   }
 
-  // componentDidMount() {
-  //   this.renderMyData();
-  // }
-
-  renderMyData = (lim) => {
-    var url = new URL(`https://www.reddit.com/r/${this.state.subR}/.json`),
-      params = { limit: lim };
-    Object.keys(params).forEach((key) =>
-      url.searchParams.append(key, params[key])
+  renderMyData = (lim, afterStart) => {
+    var url = new URL(
+      `https://www.reddit.com/r/${this.state.subR}/.json?limit=${lim}&after=${afterStart}`
     );
     fetch(url)
       .then((response) => response.json())
@@ -39,21 +39,44 @@ export default class RIV extends Component {
         let rJ = responseJson.data.children;
         for (var i = 0; i < rJ.length; i++) {
           const urlStr = JSON.stringify(rJ[i].data.url);
-          console.log(urlStr);
           if (
             urlStr.endsWith('.jpg"') ||
-            urlStr.endsWith('.png$"') ||
+            urlStr.endsWith('.png"') ||
             urlStr.endsWith('.jpeg"') ||
             urlStr.endsWith('.gif"')
           ) {
             tmpArray.push(rJ[i].data.url);
           }
         }
-        //DELETE NEXTPIC, FOR TESTING PURPOSES ONLY
-        this.setState({ data: tmpArray, nextPic: 0 });
+        if (tmpArray.length === 0) {
+          if (this.state.sigPic > 5) {
+            this.setState({ visible: true }, () => {
+              window.setTimeout(() => {
+                this.setState({ visible: false });
+              }, 5000);
+            });
+          } else {
+            this.setState(
+              {
+                sigPic: this.state.sigPic + 1,
+                afterStart: responseJson.data.after,
+              },
+              () => this._callRender()
+            );
+          }
+        } else {
+          this.setState({
+            data: this.state.data ? this.state.data.concat(tmpArray) : tmpArray,
+            afterStart: responseJson.data.after,
+          });
+        }
       })
       .catch((error) => {
-        console.error(error);
+        this.setState({ visible: true }, () => {
+          window.setTimeout(() => {
+            this.setState({ visible: false });
+          }, 5000);
+        });
       });
   };
 
@@ -67,56 +90,83 @@ export default class RIV extends Component {
     });
   };
 
+  _handleCommon = (event) => {
+    const target = event.target;
+    const name = target.name;
+
+    this.setState({ subR: name }, () => this._callRender());
+  };
+
   _handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      this.renderMyData(this.state.numOfImg);
+      this._newSearch();
     }
   };
 
-  //Change index of array containing pictures so the next or the previous image is accessed, via adding/subtracting 1
-  handlePicChange = (addV) => {
-    this.setState({
-      nextPic: this.state.nextPic + addV,
-    });
+  _callRender = () => {
+    this.renderMyData(this.state.numOfImg, this.state.afterStart);
+  };
+
+  _newSearch = () => {
+    this.setState(
+      { data: null, numOfImg: 5, afterStart: null, sigPic: 0 },
+      () => this._callRender()
+    );
+  };
+
+  _newEmptySearch = () => {
+    this.setState({ data: null, numOfImg: 5, afterStart: null, sigPic: 0 });
   };
 
   render() {
+    const miscItems = [
+      "pics",
+      "funny",
+      "aww",
+      "OldSchoolCool",
+      "memes",
+      "AdviceAnimals",
+      "wholesomememes",
+      "TheWayWeWere",
+    ];
+    const artItems = [
+      "Art",
+      "UnusualArt",
+      "Illustration",
+      "Museum",
+      "Calligraphy",
+      "StreetArt",
+      "Watercolor",
+    ];
+    const natItems = [
+      "NatureIsFuckingLit",
+      "marijuanaenthusiasts",
+      "EarthPorn",
+      "Outdoors",
+      "gardening",
+    ];
+    const aniItems = [
+      "birdpics",
+      "TinyUnits",
+      "OceanCreatures",
+      "AnimalPorn",
+      "NatureIsBrutal",
+      "WildlifePhotos",
+    ];
+    const tecItems = ["ProgrammerHumor", "homelab"];
+    const phoItems = [
+      "wildlifephotography",
+      "photocritique",
+      "itookapicture",
+      "photographs",
+    ];
     return (
-      // <div className="wrapper">
-      //   <span className="topNav" onClick={() => this.renderMyData(100)}>
-      //     Search
-      //   </span>
-      //   <input
-      //     className="topNav"
-      //     type="text"
-      //     name="subR"
-      //     onChange={this.handleInputChange}
-      //   />
-
-      //   {this.state.data ? (
-      //     <div className="container">
-      //       <img
-      //         className="img-fluid"
-      //         src={this.state.data[this.state.nextPic]}
-      //         alt=""
-      //       />
-      //     </div>
-      //   ) : (
-      //     <div>LOAD</div>
-      //   )}
-      //   <div className="botNavCont">
-      //     <span className="botNav" onClick={() => this.handlePicChange(-1)}>
-      //       Previous
-      //     </span>
-      //     <span className="botNav" onClick={() => this.handlePicChange(1)}>
-      //       Next
-      //     </span>
-      //   </div>
-      // </div>
       <div>
-        <Navbar bg="light" expand="lg">
-          <Navbar.Brand href="#home">Home</Navbar.Brand>
+        <Navbar bg="light" expand="lg" sticky="top">
+          <Navbar.Brand href="/" onClick={this._newEmptySearch}>
+            Home
+          </Navbar.Brand>
           <Form inline>
             <FormControl
               name="subR"
@@ -126,28 +176,149 @@ export default class RIV extends Component {
               placeholder="Search Subreddit"
               className="mr-sm-2"
             />
-            <Button
-              onClick={() => this.renderMyData(this.state.numOfImg)}
-              variant="success"
-            >
+            <Button onClick={this._newSearch} variant="success">
               Search
             </Button>
           </Form>
         </Navbar>
-
-        <CardColumns>
+        {this.state.visible ? (
+          <Alert variant="danger">
+            No other significant image(s) exist in this subreddit. Please browse
+            another subreddit.
+          </Alert>
+        ) : null}
+        <Container fluid>
           {this.state.data ? (
-            this.state.data.map(function (item, i) {
-              return (
-                <Card key={i}>
-                  <Card.Img src={item} />
-                </Card>
-              );
-            })
+            <Row>
+              {this.state.data.map((item, i) => (
+                <Col md={4} key={i}>
+                  <Card.Img className="imageDisplay" src={item} />
+                </Col>
+              ))}
+              <Col md={12}>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  block
+                  onClick={this._callRender}
+                >
+                  Load More
+                </Button>
+              </Col>
+            </Row>
           ) : (
-            <div>LOAD</div>
+            <div>
+              <Row className="listOfSubRs">
+                <Col md={2}>
+                  <ListGroup className="subRedListTopic">
+                    <ListGroup.Item>Miscellaneous</ListGroup.Item>
+                    {miscItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col md={2}>
+                  <ListGroup>
+                    <ListGroup.Item className="subRedListTopic">
+                      Artistic
+                    </ListGroup.Item>
+                    {artItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col md={2}>
+                  <ListGroup>
+                    <ListGroup.Item className="subRedListTopic">
+                      Natural
+                    </ListGroup.Item>
+                    {natItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col md={2}>
+                  <ListGroup>
+                    <ListGroup.Item className="subRedListTopic">
+                      Animals
+                    </ListGroup.Item>
+                    {aniItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col md={2}>
+                  <ListGroup>
+                    <ListGroup.Item className="subRedListTopic">
+                      Technology
+                    </ListGroup.Item>
+                    {tecItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col md={2}>
+                  <ListGroup>
+                    <ListGroup.Item className="subRedListTopic">
+                      Photography
+                    </ListGroup.Item>
+                    {phoItems.map((item, i) => (
+                      <ListGroup.Item
+                        action
+                        variant="light"
+                        name={item}
+                        key={i}
+                        onClick={this._handleCommon}
+                      >
+                        /r/{item}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+              </Row>
+            </div>
           )}
-        </CardColumns>
+        </Container>
       </div>
     );
   }
