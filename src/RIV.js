@@ -29,6 +29,7 @@ export default class RIV extends Component {
   }
 
   renderMyData = (lim, afterStart) => {
+    this.setState({ visible: false });
     var url = new URL(
       `https://www.reddit.com/r/${this.state.subR}/.json?limit=${lim}&after=${afterStart}`
     );
@@ -50,11 +51,7 @@ export default class RIV extends Component {
         }
         if (tmpArray.length === 0) {
           if (this.state.sigPic > 5) {
-            this.setState({ visible: true }, () => {
-              window.setTimeout(() => {
-                this.setState({ visible: false });
-              }, 5000);
-            });
+            this.setState({ visible: true });
           } else {
             this.setState(
               {
@@ -72,11 +69,7 @@ export default class RIV extends Component {
         }
       })
       .catch((error) => {
-        this.setState({ visible: true }, () => {
-          window.setTimeout(() => {
-            this.setState({ visible: false });
-          }, 5000);
-        });
+        this.setState({ visible: true });
       });
   };
 
@@ -208,6 +201,7 @@ export default class RIV extends Component {
             </Row>
           ) : (
             <div>
+              <div className="commonSubTitle">Common Subreddits</div>
               <Row className="listOfSubRs">
                 <Col md={2}>
                   <ListGroup className="subRedListTopic">
@@ -216,6 +210,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
@@ -234,6 +229,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
@@ -252,6 +248,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
@@ -270,6 +267,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
@@ -288,6 +286,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
@@ -306,6 +305,7 @@ export default class RIV extends Component {
                       <ListGroup.Item
                         action
                         variant="light"
+                        className="topics"
                         name={item}
                         key={i}
                         onClick={this._handleCommon}
