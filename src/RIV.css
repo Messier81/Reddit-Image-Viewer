@@ -33,3 +33,6 @@
   padding-bottom: 2%;
   text-align: center;
 }
+.homeButton:hover {
+  cursor: pointer;
+}

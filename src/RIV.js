@@ -157,7 +157,7 @@ export default class RIV extends Component {
     return (
       <div>
         <Navbar bg="light" expand="lg" sticky="top">
-          <Navbar.Brand href="/" onClick={this._newEmptySearch}>
+          <Navbar.Brand className="homeButton" onClick={this._newEmptySearch}>
             Home
           </Navbar.Brand>
           <Form inline>
