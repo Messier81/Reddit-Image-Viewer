@@ -132,19 +132,11 @@ export default class RIV extends Component {
       "StreetArt",
       "Watercolor",
     ];
-    const natItems = [
-      "NatureIsFuckingLit",
-      "marijuanaenthusiasts",
-      "EarthPorn",
-      "Outdoors",
-      "gardening",
-    ];
+    const natItems = ["Outdoors", "gardening"];
     const aniItems = [
       "birdpics",
       "TinyUnits",
       "OceanCreatures",
-      "AnimalPorn",
-      "NatureIsBrutal",
       "WildlifePhotos",
     ];
     const tecItems = ["ProgrammerHumor", "homelab"];
